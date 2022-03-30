@@ -17,16 +17,16 @@ Also contains ForceAnalysis.m, which is the main Matlab visualisation script for
 # force data
 With the option "Slab_pull" and "Drag" in post_processing/ForceAnalysis.m, we produced the raw force output used to make the force quantification figures.
 The names are the systematic old names. The list below shows the names used in our manuscript. 
-ER -> ref
-FI -> oc510
-FJ -> oc410
-FK -> oc310
-FP -> peierls
-FQ -> LM25
-FR -> LM50
-FS -> LM75
-FT -> LMoc510
-FX -> slowref
+* ER -> ref
+* FI -> oc510
+* FJ -> oc410
+* FK -> oc310
+* FP -> peierls
+* FQ -> LM25
+* FR -> LM50
+* FS -> LM75
+* FT -> LMoc510
+* FX -> slowref
 
 # PTt data
 The high-resolution PTt data is stored in text files *PTt.log with the same naming as the force data files. 
