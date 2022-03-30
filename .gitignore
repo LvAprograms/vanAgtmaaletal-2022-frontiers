@@ -1,0 +1,7 @@
+*.png
+*.jpg
+.vscode/
+*.o
+in2stm
+i2stm
+*.log
