@@ -36,23 +36,23 @@ with open("../../detachment_data.txt") as f:
 
 plt.figure()
 #
-plt.semilogx(durations, depths, 'bd', label='This research')
-plt.semilogx(t_baumann, d_baumann, 'g^', label='Baumann et al (2010)')
-plt.semilogx(t_duretz, d_duretz, 'ro', label='Duretz et al (2012)')
-plt.semilogx(t_duretz_nP, d_duretz_nP, 'ro', fillstyle='none', label='Duretz, no Peierls')
-plt.semilogx(t_duretz_nS, d_duretz_nS, 'ko', label='Duretz, no shear heat')
+# plt.semilogx(durations, depths, 'bd', label='This research')
+# plt.semilogx(t_baumann, d_baumann, 'g^', label='Baumann et al (2010)')
+# plt.semilogx(t_duretz, d_duretz, 'ro', label='Duretz et al (2012)')
+# plt.semilogx(t_duretz_nP, d_duretz_nP, 'ro', fillstyle='none', label='Duretz, no Peierls')
+# plt.semilogx(t_duretz_nS, d_duretz_nS, 'ko', label='Duretz, no shear heat')
 
 
-# plt.plot(durations, depths, 'bd', label='This research')
-# plt.plot(t_baumann, d_baumann, 'g^', label='Baumann et al (2010)')
-# plt.plot(t_duretz, d_duretz, 'ro', label='Duretz et al (2012)')
-# plt.plot(t_duretz_nP, d_duretz_nP, 'ro', fillstyle='none', label='Duretz, no Peierls')
-# plt.plot(t_duretz_nS, d_duretz_nS, 'ko', label='Duretz, no shear heat')
+plt.plot(durations, depths, 'rd', label='This research')
+plt.plot(t_baumann, d_baumann, 'g^', label='Baumann et al (2010)')
+plt.plot(t_duretz, d_duretz, 'bo', label='Duretz et al (2012)')
+plt.plot(t_duretz_nP, d_duretz_nP, 'bo', fillstyle='none', label='Duretz, no Peierls')
+plt.plot(t_duretz_nS, d_duretz_nS, 'ko', label='Duretz, no shear heat')
 
 plt.xlabel("Breakoff duration [Myr]")
 plt.ylabel("Breakoff depth (lowest point of slab) [km]")
 plt.grid(b=True)
-plt.legend(loc='upper left')
-plt.savefig("detdepth.png")
+plt.legend(loc='lower right')
+# plt.savefig("detdepth.png")
 
-plt.show()
+plt.savefig("C:\\Users\\luukv\\Documents\\Studie\\Masters\\Jaar2\\MSc_thesis\\PAPER\\Figures_frontiers\\new_detachment_figure_nolog.png", dpi=300)

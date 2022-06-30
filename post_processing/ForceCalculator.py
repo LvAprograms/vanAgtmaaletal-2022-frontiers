@@ -17,7 +17,7 @@ class ForceCalculator(object):
 
     def read_data(self):
         # Read the data using h5py package
-        f = h5.File('/media/luuk/My Book/MSc_paper/Data/{}/{}{}.gzip.h5'.format(self.name, self.name[0:2], self.dt), 'r')
+        f = h5.File('C:\\Users\\luukv\\Documents\\Studie\\Masters\\Jaar2\\MSc_thesis\\PAPER\\REVIEW_round1\\few_datafiles\\{}\\{}{}.gzip.h5'.format(self.name, self.name, self.dt), 'r')
         dset = f['NodeGroup']
         print(list(f['VisMarkerGroup'].keys()))
         print(list(dset.keys()))
@@ -28,7 +28,7 @@ class ForceCalculator(object):
 
 
     def calculate_grid(self):
-        x_nodes, y_nodes, self.dx, self.dy = get_steps_from_init_file("../MSc_paper/initfiles/{}_init_ls.t3c".format(self.name[0:2]))
+        x_nodes, y_nodes, self.dx, self.dy = get_steps_from_init_file("C:\\Users\\luukv\\Documents\\Studie\\Masters\\Jaar2\\MSc_thesis\\PAPER\\REVIEW_round1\\few_datafiles\\{}\\{}_init_ls.t3c".format(self.name, self.name))
         scale = 1
         dx = np.array(self.dx)
         dy = np.array(self.dy)

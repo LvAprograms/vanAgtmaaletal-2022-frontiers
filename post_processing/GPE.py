@@ -80,7 +80,7 @@ class GPE_calculator(ForceCalculator):
         x_km = [v/1000 for v in self.x]
         z_km = [v/1000 for v in self.z]
         [XX, ZZ] = np.meshgrid(x_km, [-v + 20 for v in z_km])
-        f, ax = plt.subplots(figsize=(12,4))
+        f, ax = plt.subplots(figsize=(12,1.5)) # use 12, 4 for ratio as in Fig. S2
         levels = [9]
         # cp = ax.contour(XX, ZZ, self.rho[0:self.nz-1, 0:self.nx-1], levels)
         cp = ax.contour(XX, ZZ, self.tk[0:self.nz-1, 0:self.nx-1], levels)
@@ -92,7 +92,7 @@ class GPE_calculator(ForceCalculator):
         #ax.clabel(cp2, inline=False, fontsize=10)
 
         ax.set_ylim([-5, 10])
-        ax.set_xlim([250, 2000])
+        ax.set_xlim([600, 1450]) # 250, 2000 for topo as in Fig. S2
         ax.grid(b=True)
         # ax.plot([x_km[x1] for _ in self.z], [-v+10 for v in z_km], 'r--', label='"orogen"')
         # ax.plot([x_km[x2] for _ in self.z], [-v+10 for v in z_km], 'b--', label='"hinterland"')
@@ -100,9 +100,9 @@ class GPE_calculator(ForceCalculator):
         # f.colorbar(cp)
 
 
-modelname = "FQ_rerun"
+modelname = "ER"
 
-testGPE = GPE_calculator(modelname, timestep=560, nx=1785, nz=509, x_oro=250, x_hinter=1400, z_iso=270)
+testGPE = GPE_calculator(modelname, timestep=496, nx=1785, nz=509, x_oro=250, x_hinter=1400, z_iso=270)
 testGPE.read_data()
 testGPE.calculate_grid()
 # testGPE.calc_P()
@@ -112,5 +112,5 @@ testGPE.calculate_grid()
 testGPE.topography(testGPE.x_oro, testGPE.x_hinter)
 
 # plt.savefig("{}_{}_topo_GPElocs.png".format(modelname, testGPE.dt))
-plt.savefig("/home/luuk/Documents/ETH/{}_topo_{}.png".format(testGPE.name, testGPE.dt), dpi=300)
+plt.savefig("C:\\Users\\luukv\\Documents\\Studie\\Masters\\Jaar2\\MSc_thesis\\PAPER\\Figures_Frontiers\\{}_topo_{}_12to1.png".format(testGPE.name, testGPE.dt), dpi=300)
 # plt.show()
