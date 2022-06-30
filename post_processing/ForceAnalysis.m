@@ -22,19 +22,19 @@ end
 % -- PLOTTING SPECIFICATIONS --
 
 % --- Which files ---
-expname     = '/media/luuk/My Book/MSc_paper/Data/FI_rerun/FI';      % Basic name of the files ['XXXX' ('.gzip.h5')]
+expname     = 'Data/ER_rerun/ER';   % Basic name of the files ['XXXX' ('.gzip.h5')]
 expnames = split(expname,'/');
 disp(expnames)
 
 setup       = 1;            % Model setup: 1=largescale, 2=lab
 
-nstart      = 999;          % Starts from file number XXX.
-nend        = nstart;       % Ends with file number XXX.
+nstart      = 1;           % Starts from file number XXX.
+nend        = nstart+999;       % Ends with file number XXX.
 skip        = 1;            % Skip this many files. Can use nend-nstart   
 
 % --- What variables ---
 % When want to plot a single variable make (2) or (3) 0. 
-sp_var(1)   = 20;           % 1 - vx ; 2 - vy ; 3 - density ; 4 - temperature ; 5 - pressure; 6 - sxx, 7 - sxy, 8 -visocisty; 9 - exx,
+sp_var(1)   = 6;           % 1 - vx ; 2 - vy ; 3 - density ; 4 - temperature ; 5 - pressure; 6 - sxx, 7 - sxy, 8 -visocisty; 9 - exx,
 sp_var(2)   = 0;           % 10 - exy; 11 - G (not in all hdf5); 12 - exx_ne; 13 - exy_ne; 14 - s_ii; 15 - e_ii; 16 - e_ne_ii; 17 - Z (G not in all hdf5); 20 - composition; OWN: 21 - x-grid
 sp_var(3)   = 0;           % This third never equal to 20, since colormap of last variable dictates which one use (freezeColors does not work yet)                                    
                             % v=velocity, s=stress, e=strain rate, G=shear modulus
@@ -43,7 +43,7 @@ temp        = 1;            % Temperature contours
 
 % --- How to plot it ---
 printmod    = 2;        % 1: do not show on screen, but save as png (when not using GUI on servers for speed + ease! Note need equally spaced imagesc i.s.o. pcolor as has bug)
-                        % 2: show and png-save figures (that can be madev_x into movies through "convert")
+                        % 2: show and png-save figures (that can be made into movies through "convert")
                         % 3: show and eps-save nice figures for papers
                         % (i.e., save as eps + rm air etc): use GUI and one file: also save data in mat for multiple plotting in different paper quality script
 zoom        = 1;        % 0 or -1: no zoom = whole model;    1: zoom occurs according to limits below
@@ -52,18 +52,17 @@ rm_air      = 0;        % Set variable to zero in air, only works for high resol
 v_field     = 0;        % OWN ADDITION: 0 = no velocity field arrows, 1 = velocity field overlay
 Slab_pull   = 0;        % OWN ADDITION: 0 = don't calculate slab pull, 1 = calculate slab pull
 Drag        = 0;        % OWN ADDITION: 0 = don't calculate basal mantle drag force, 1 = calculate it    
-stress_axes = 0;        % Luca dal Zilio, 2020: if 1, calculates principal stress axes. 
 
 if Slab_pull || Drag
     timestep = 1;
-    t = zeros((nend - nstart)/skip + 1, 1); % Time vector
+    t = zeros(int16((nend - nstart))/skip + 1, 1); % Time vector
     if Slab_pull
-        SP_t = zeros((nend - nstart)/skip + 1, 1); % Slab pull vector
-        A_t = zeros((nend - nstart)/skip + 1, 1); % also nice to see evolution of slab area
+        SP_t = zeros(int16((nend - nstart))/skip + 1, 1); % Slab pull vector
+        A_t = zeros(int16((nend - nstart))/skip + 1, 1); % also nice to see evolution of slab area
     end
     if Drag
-        MD = zeros((nend - nstart)/skip + 1, 5, 3); % Mantle drag matrix
-        PLATE_LENGTH = 700e3; % length of upper plate, hardcoded now... 
+        MD = zeros(int16((nend - nstart))/skip + 1, 5, 5); % Mantle drag matrix
+        %PLATE_LENGTH = 700e3; % length of upper plate, hardcoded now... 
     end
 end
 
@@ -71,16 +70,16 @@ end
 if setup==1
     
     % trench coords from comp:
-    x_trench = 1050; % 840
+    x_trench = 900; % 840
     y_trench = 7;
     
     % Plotting limitations 
     % Papers: gxt-50 gxt+250 gyt-3 gyt+78 
     if zoom > 0
-        x_beg      = x_trench-150; % 50
-        x_end      = x_trench+250; % 250
+        x_beg      = x_trench-400; % 50
+        x_end      = x_trench+900; % 250
         y_beg      = y_trench-3;
-        y_end      = y_trench+80; % 78
+        y_end      = y_trench+150; % 78
     end
         
     % Isotherm location
@@ -103,9 +102,8 @@ else
 end
 
 % Change colormap for Matlab R2014b
-set(0,'DefaultFigureColormap',feval('copper')) % for visosity, stress
-%load('/home/luuk/Documents/ETH/colormaps/ScientificColourMaps7/berlin/berlin.mat');
-%set(0,'DefaultFigureColormap',flipud(berlin))
+set(0,'DefaultFigureColormap',feval('copper')) % 'jet'
+
 % Dock figures
 if printmod==2 || printmod>3
 	set(0,'DefaultFigureWindowStyle','docked'); 
@@ -115,8 +113,8 @@ else
 end
 
 % Picture settings
-save_path = sprintf('/media/luuk/My Book/MSc_paper/Figures/%s/',string(expnames(7)));
-disp(save_path)
+% save_path = sprintf('C:/Users/luukv/Documents/Studie/Masters/Jaar2/MSc_thesis/PAPER/modelfigs/Figures/%s/',string(expnames(2)));
+save_path = sprintf('Figures/%s/remote/',string(expnames(2)))
 if (exist(save_path, 'dir') == 0)
     mkdir(save_path);
 end
@@ -527,14 +525,13 @@ for nt = nstart:skip:nend
             for i=2:ynumy
                 dy(i-1) = y(i) - y(i-1);
             end
-            
-            figure();
+            figure()
             subplot(1,2,1);
             plot(x);
             grid on
             subplot(1,2,2);
             plot(dx);
-            figure();
+            figure()
             subplot(1,2,1);
             plot(y);
             grid on
@@ -591,7 +588,7 @@ for nt = nstart:skip:nend
             % mx and my have dimensions mnx_end and mny_end
             for i=1:ynumy
                  if y(i) > starty % y is in meters, mx and my in km.
-                     if T_subrow(i) > 100 && y(i) < endy % if less than 100 nodes have sub-LAB temperatures, the slab is not taken into account            
+                     if T_subrow(i) > 100 && y(i) < 600e3                
                          dy = abs(my - y(i)/1e3); % y difference in km
                          [mindy, minyid] = min(dy); % minimum dy and its index
                          for j=1:xnumx
@@ -615,9 +612,7 @@ for nt = nstart:skip:nend
                  end
             end
             spfig = figure(11);
-            set(spfig, 'Visible', 'Off');
-            hax1 = axes;
-            p     = pcolor(hax1,XX, YY, rho_slab);
+            p     = pcolor(XX, YY, rho_slab);
             axis ij;
             shading interp;
             xlabel('Horizontal distance [km]');
@@ -626,9 +621,8 @@ for nt = nstart:skip:nend
             c.YTick      = [-1 0 1];
             c.YTickLabel = {"surroundings", "lithosphere", "slab"};
             set(gca, 'DataAspectRatio', [1 1 1]);
-            title(['Time = ', num2str(timesum/1e6),' Myrs for model ',char(expnames(7))]);
-            print(format, res,[save_path, char(expnames(7)),'_slab_id', num2str(nt)]);
-            close(spfig);
+            title(['Time = ', num2str(timesum/1e6),' Myrs for model ',char(expnames(2))]);
+            print(format, res,[save_path, char(expnames(2)),'_slab_id', num2str(nt)]);
             % Actual slab pull calculation
             % we know now where the slab is.
             SP = 0; % Total slab pull in N/m
@@ -676,7 +670,7 @@ for nt = nstart:skip:nend
                  if i > nLAB && i <= nLAB + 2 % y is in meters, mx and my in km.
                      dy = abs(my - y(i)/1e3); % y difference in km
                      [mindy, minyid] = min(dy); % minimum dy and its index
-                     for j=1:xnumx
+                     for j=xnumx-10:-1:1
                          dx = abs(mx - x(j)/1e3); % x difference in km
                          [mindx, minxid] = min(dx);% minimum dx and its index
                          dists = sqrt(mindx ^2 + mindy^2);
@@ -692,12 +686,26 @@ for nt = nstart:skip:nend
                      end
                  end
             end
+            
+            % Determine PLATE_LENGTH
+            if nUP_start > 0
+                dy = abs(my - y(nLAB-80)/1e3); % make sure the point is in the plate
+                [mindy, minyid] = min(dy);
+                for j=nUP_start:xnumx
+                    dx = abs(mx - x(j)/1e3);
+                    [mindx, minxid] = min(dx);
+                    if composition(minyid, minxid) == 10
+                        PLATE_LENGTH = x(j) - x(nUP_start);
+                        break;
+                    end
+                end
+            end
+            
             if nUP_start > 0 % if any non-asthenoshperic node was found
                 nUP_end = find(x > (x(nUP_start) + PLATE_LENGTH),1, 'first');
-                %disp(["using ", x(nUP_end)-x(nUP_start), " m for the integration"])
+                disp(["x(nUP_start): ", x(nUP_start), "x(nUP_end): ", x(nUP_end), "-> using ", x(nUP_end)-x(nUP_start), " m for the integration"])
                 if nUP_end > nUP_start
-                    % get all components for integration of shear stress,
-                    % which is roughly the same as integration of the
+                    % get all components for integration of the
                     % product of dVxdz and the effective viscosity
                     dx        = x(2:end) - x(1:end-1);
                     dVxdz     = dVxdz(depths, nUP_start:nUP_end);
@@ -711,13 +719,15 @@ for nt = nstart:skip:nend
                     MD(timestep, :, 1) = mean(-Dragforce, 2);
                     MD(timestep, :, 2) = max(-Dragforce,[], 2);
                     MD(timestep, :, 3) = min(-Dragforce,[], 2);
+                    MD(timestep, :, 4) = x(nUP_start);
+                    MD(timestep, :, 5) = PLATE_LENGTH;
                 end
             else
                 disp('no non-asthenosphere nodes found')
             end
         end
         % END OWN ADDITION
-
+        
         %% Remove velocities in air for paper plotting to avoid distraction
         if rm_air==1
             if setup==1
@@ -774,8 +784,7 @@ for nt = nstart:skip:nend
     % ---------------------------------------------------------------
     
     if printmod == 1
-        fig=figure(1)  ;  
-        set(fig, 'Visible', 'Off');
+        figure('Visible', 'Off');
     elseif printmod == 3
         figure('units','normalized','outerposition',[0 0 1 1]);
     else
@@ -831,7 +840,6 @@ for nt = nstart:skip:nend
             colormap('default');
             if printmod > 1
                 pcolor(x_stag(nx_beg:5:nx_end), y_stag(ny_beg:5:ny_end), var(ny_beg:5:ny_end,nx_beg:5:nx_end));
-                colormap(redblue)
             else
                 %imagesc(x_stag(nx_beg:nx_end), y_stag(ny_beg:ny_end), var(ny_beg:ny_end,nx_beg:nx_end));
                 pcolor(x_stag(nx_beg:nx_end), y_stag(ny_beg:ny_end), var(ny_beg:ny_end,nx_beg:nx_end));
@@ -844,76 +852,16 @@ for nt = nstart:skip:nend
         % irregular grid
         if v_field == 1
             step = 10;
-            vskip = 40; % vertical nodes to skip (to prevent air velocities)
             hold on;
-            [X,Y]       = meshgrid(x_stag(nx_beg:step:nx_end), y_stag(ny_beg + vskip:step:ny_end));
-            q           = quiver(X,Y,vx(ny_beg + vskip:step:ny_end,nx_beg:step:nx_end),vy(ny_beg + vskip:step:ny_end,nx_beg:step:nx_end));
-            %q.AutoScale = 'off';
+            [X,Y]       = meshgrid(x_stag(nx_beg:step:nx_end), y_stag(ny_beg:step:ny_end));
+            q           = quiver(X,Y,vx(ny_beg:step:ny_end,nx_beg:step:nx_end),vy(ny_beg:step:ny_end,nx_beg:step:nx_end), 10);
+            q.AutoScale = 'off';
             q.Color     = 'black';
 %             hold on;
 %             quiver(2750, 780, 20, 0);
 %             text(2850, 760, '1 cm/yr')
         end
             % END OWN ADDITION
-        
-                    
-  %============================================
-        % Stress axes (Luca dal Zilio, 2020)
-        if stress_axes == 1
-            %============================================
-            var_sxx = hdf5read(filename,'/NodeGroup/sxx');
-            sxx = reshape(var_sxx, ynumy, xnumx);
-            syy = -sxx;
-            var_sxy = hdf5read(filename,'/NodeGroup/sxy');
-            sxy = reshape(var_sxy, ynumy, xnumx);
-            
-            for m=2:ynumy-1
-                for n=2:xnumx-1
-                    SXX(m,n)=(sxx(m,n)+sxx(m+1,n)+sxx(m,n+1)+sxx(m+1,n+1))/4;
-                    SYY(m,n)=(syy(m,n)+syy(m+1,n)+syy(m,n+1)+syy(m+1,n+1))/4;
-                    sxy(m,n)=sxy(m,n);
-                    sii(m,n)= sqrt(SXX(m,n)^2 + sxy(m,n)^2);
-                end
-            end
- 
-            for m=40:13:160 % MODIFY: Y 
-                for n=260:26:1040-1 % MODIFY: X
-                    Stress=[SXX(m,n) sxy(m,n);sxy(m,n) SYY(m,n)];
-                    [a,b]=eig(Stress);
-                    if (b(1,1)>b(2,2))
-                        stress_max=b(1,1);
-                        column_max=1;
-                        stress_min=b(2,2);
-                        column_min=2;
-                    else
-                        stress_max=b(2,2);
-                        column_max=2;
-                        stress_min=b(1,1);
-                        column_min=1;
-                    end
-                    %===============================================
-                    stress_max=stress_max/sii(m,n);
-                    stress_min=abs(stress_min)/sii(m,n);
-                    %Plot max and min axes
-                    hold all
-                    %===============================================
-                    %Maximum extension: black
-                    %vector length and scale it
-                    l=-stress_max:0.01:stress_max;
-                    l=l*2;
-                    plot(x_stag(n)+l*a(1,column_max),y_stag(m)+l*a(2,column_max),'k','LineWidth',2)
-                    %===============================================
-                    %Maximum compression: red
-                    %vector length and scale it
-                    l=-stress_min:0.01:stress_min;
-                    l=l*2;
-                    plot(x_stag(n)+l*a(1,column_min),y_stag(m)+l*a(2,column_min),'color','r','LineWidth',2)
-                end
-            end
-        end
-        
-  %====================================================
-            
         % Isotherms
         if temp == 1
             hold on;
@@ -949,9 +897,11 @@ for nt = nstart:skip:nend
                 %caxis ([1.3e9 1.4e9]);
             elseif vis_var == 6
                 ylabel(cb,'Dev. normal stress [Pa]');
+                colormap(redblue);
                 caxis ([-50e6 50e6]);
             elseif vis_var == 7
                 ylabel(cb,'Dev. shear stress [Pa]');
+                colormap(redblue);
                 caxis ([-30e6 30e6]);
             elseif vis_var == 8
                 caxis ([17 25]);
@@ -979,7 +929,7 @@ for nt = nstart:skip:nend
                 caxis(gca,[-15 -12]);
             elseif vis_var == 16
                 ylabel(cb,'log10(ne strain rate II) [s^{-1}]');
-                caxis(gca,[-15 -12]);
+                caxis(gca,[-20 -12]);
             elseif vis_var == 17
                 ylabel(cb,'Visco-elasticity factor Z [-]');
                 caxis(gca,[0 1]);
@@ -1069,7 +1019,7 @@ for nt = nstart:skip:nend
         
         % Add title
 	% subtract path from expname
-	final_expname = char(expnames(7));
+	final_expname = char(expnames(2));
         if (iv == 1)
             if setup == 1
                 title(['Time = ', num2str(timesum/1e6),' Myrs for model ',final_expname]);
@@ -1190,26 +1140,6 @@ for nt = nstart:skip:nend
         if Slab_pull || Drag
             timestep = timestep + 1;
         end
-        
-%         if Slab_pull
-%             D = [t SP_t A_t];
-%             disp('writing Slabpull data to file')
-%             fn = sprintf('%s_SPdata.txt', final_expname);
-%             save(fn, 'D', '-ascii', '-double', '-tabs');
-%         end
-%         if Drag
-%             disp('writing Suction data to files')
-%             fn_mean = sprintf('%s_MDdata_mean.txt', final_expname);
-%             fn_max = sprintf('%s_MDdata_max.txt', final_expname);
-%             fn_min = sprintf('%s_MDdata_min.txt', final_expname);
-%             MDmean = [t MD(:,:,1)];
-%             MDmax = [t MD(:,:,2)];
-%             MDmin = [t MD(:,:,3)];
-%             save(fn_mean, 'MDmean', '-ascii', '-double', '-tabs');
-%             save(fn_max, 'MDmax', '-ascii', '-double', '-tabs');
-%             save(fn_min, 'MDmin', '-ascii', '-double', '-tabs');
-% 
-%         end
     end
     end
     
@@ -1226,17 +1156,18 @@ if Drag
     fn_mean = sprintf('%s_MDdata_mean.txt', final_expname);
     fn_max = sprintf('%s_MDdata_max.txt', final_expname);
     fn_min = sprintf('%s_MDdata_min.txt', final_expname);
-    MDmean = [t MD(:,:,1)];
-    MDmax = [t MD(:,:,2)];
-    MDmin = [t MD(:,:,3)];
+    MDmean = [t MD(:,1,4) MD(:,1,5) MD(:,:,1)];
+    MDmax = [t MD(:,1,4) MD(:,1,5) MD(:,:,2)];
+    MDmin = [t MD(:,1,4) MD(:,1,5) MD(:,:,3)];
     save(fn_mean, 'MDmean', '-ascii', '-double', '-tabs');
     save(fn_max, 'MDmax', '-ascii', '-double', '-tabs');
     save(fn_min, 'MDmin', '-ascii', '-double', '-tabs');
+
+
+    
     
 end
 if nt~=nend
     close(gcf);
 end   
-
-
 
